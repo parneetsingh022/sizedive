@@ -1,0 +1,80 @@
+name: Rust CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Format and Clippy
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+  test:
+    name: Test - ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux x64, usually Intel/AMD
+          - name: Linux x64
+            runner: ubuntu-24.04
+
+          # Linux ARM64
+          - name: Linux ARM64
+            runner: ubuntu-24.04-arm
+
+          # Windows x64, usually Intel/AMD
+          - name: Windows x64
+            runner: windows-2025
+
+          # Windows ARM64
+          - name: Windows ARM64
+            runner: windows-11-arm
+
+          # macOS Intel
+          - name: macOS Intel x64
+            runner: macos-26-intel
+
+          # macOS Apple Silicon ARM64
+          - name: macOS ARM64
+            runner: macos-26
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Show platform info
+        shell: bash
+        run: |
+          rustc --version
+          cargo --version
+          rustc -vV
+          uname -a || true
+
+      - name: Run tests
+        run: cargo test --all-features --verbose
+
+      - name: Build CLI
+        run: cargo build --all-features --verbose
