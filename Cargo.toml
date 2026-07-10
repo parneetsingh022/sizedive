@@ -1,3 +1,8 @@
+[workspace]
+members = ["fs-size"]
+
+resolver = "3"
+
 [package]
 name = "sizedive"
 version = "0.1.0"
@@ -9,3 +14,4 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "4.6.1"
+fs-size = { path = "fs-size"}

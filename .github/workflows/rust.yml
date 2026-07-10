@@ -74,7 +74,7 @@ jobs:
           uname -a || true
 
       - name: Run tests
-        run: cargo test --all-features --verbose
+        run: cargo test --all --all-features --verbose
 
       - name: Build CLI
-        run: cargo build --all-features --verbose
+        run: cargo build --all --all-features --verbose
